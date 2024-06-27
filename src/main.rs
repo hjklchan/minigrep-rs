@@ -1,9 +1,8 @@
-use minigrep::{Config, run};
+use minigrep::{run, Config};
 use std::env;
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    let config = Config::build(&args).unwrap_or_else(|err| {
+    let config = Config::build(env::args()).unwrap_or_else(|err| {
         println!("Problem parse arguments: {err}");
         std::process::exit(1);
     });

@@ -2,20 +2,27 @@ use std::{env, error::Error, fs};
 
 // 命令行参数
 // 聚合配置变量到结构体中
-pub struct Config<'a> {
-    query: &'a str,
-    file_path: &'a str,
+pub struct Config {
+    query: String,
+    file_path: String,
     ignore_case: bool,
 }
 
-impl<'a> Config<'a> {
-    pub fn build(args: &'a [String]) -> Result<Self, &'static str> {
-        if args.len() < 3 {
-            return Err("not enough arguments");
-        }
+impl Config {
+    pub fn build(mut args: impl Iterator<Item = String>) -> Result<Self, &'static str> {
+        // if args.len() < 3 {
+        //     return Err("not enough arguments");
+        // }
+        args.next();
 
-        let query = &args[1];
-        let file_path = &args[2];
+        let query = match args.next() {
+            Some(value) => value,
+            None => return Err("Didn't get a query"),
+        };
+        let file_path = match args.next() {
+            Some(value) => value,
+            None => return Err("Didn't get a file path"),
+        };
         let ignore_case = env::var("IGNORE_CASE").is_ok();
 
         Ok(Self {
@@ -30,9 +37,9 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let contents = fs::read_to_string(config.file_path)?;
 
     let iter = if config.ignore_case {
-        search_case_insensitive(config.query, &contents)
+        search_case_insensitive(&config.query, &contents)
     } else {
-        search(config.query, &contents)
+        search(&config.query, &contents)
     };
 
     iter.into_iter().for_each(|line| println!("{line}"));

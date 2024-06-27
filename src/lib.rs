@@ -10,19 +10,13 @@ pub struct Config {
 
 impl Config {
     pub fn build(mut args: impl Iterator<Item = String>) -> Result<Self, &'static str> {
-        // if args.len() < 3 {
-        //     return Err("not enough arguments");
-        // }
+        // 消费掉第一个参数 (程序名)
         args.next();
 
-        let query = args.next().ok_or("Didn't get a query (e.g. query)")?;
-        let file_path = args.next().ok_or("Didn't get file path (e.g. file_path)")?;
-        let ignore_case = env::var("IGNORE_CASE").is_ok();
-
         Ok(Self {
-            query,
-            file_path,
-            ignore_case,
+            query: args.next().ok_or("Didn't get a query (e.g. query)")?,
+            file_path: args.next().ok_or("Didn't get file path (e.g. file_path)")?,
+            ignore_case: env::var("IGNORE_CASE").is_ok(),
         })
     }
 }

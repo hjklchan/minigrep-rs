@@ -15,14 +15,8 @@ impl Config {
         // }
         args.next();
 
-        let query = match args.next() {
-            Some(value) => value,
-            None => return Err("Didn't get a query"),
-        };
-        let file_path = match args.next() {
-            Some(value) => value,
-            None => return Err("Didn't get a file path"),
-        };
+        let query = args.next().ok_or("Didn't get a query (e.g. query)")?;
+        let file_path = args.next().ok_or("Didn't get file path (e.g. file_path)")?;
         let ignore_case = env::var("IGNORE_CASE").is_ok();
 
         Ok(Self {
